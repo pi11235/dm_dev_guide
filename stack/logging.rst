@@ -131,6 +131,13 @@ When running command line tasks, the ``--loglevel`` command line argument can be
 
     processCcd.py [input/output/id] --loglevel calibrate=DEBUG
 
+You can also configure the log level of a subtask in your task config. For example, if your task's ``SourceSelector`` subtask is more verbose than you need for your use case, you can lower its level to warning:
+
+.. code-block:: python
+
+    import lsst.log
+    self.sourceSelector.loglevel.setLevel(lsst.log.WARN)
+
 Fine-level Verbosity in Tracing
 ===============================
 
