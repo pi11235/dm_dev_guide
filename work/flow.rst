@@ -1,8 +1,8 @@
-##########################################################
-DM Development Workflow with Git, GitHub, JIRA and Jenkins
-##########################################################
+############################################################
+TSSW Development Workflow with Git, GitHub, JIRA and Jenkins
+############################################################
 
-This page describes our procedures for collaborating on LSST DM software and documentation with `Git <http://git-scm.org>`_, `GitHub <https://github.com>`_ and JIRA_:
+This page describes our procedures for collaborating on LSST TSSW software and documentation with `Git <http://git-scm.org>`_, `GitHub <https://github.com>`_ and JIRA_:
 
 1. :ref:`Configuring Git for TSSW development <git-setup>`.
 2. :ref:`Using JIRA for agile development <workflow-jira>`.
@@ -201,15 +201,30 @@ See `RFC-21 <https://jira.lsstcorp.org/browse/RFC-21>`_ for discussion. *IS THIS
 The master branch
 -----------------
 
-``master`` is the main integration branch for our repositories.
-The master branch should always be stable and deployable.
-In some circumstances, a ``release`` integration branch may be used by the release manager.
-Development is not done directly on the ``master`` branch, but instead on *ticket branches*.
+``master`` is the branch for our repositories which is always stable and deployable.
+In some circumstances, a ``release`` integration branch may be used by the release manager. **I DONT THINK WE USE THIS?**
 
 Documentation edits and additions are the only scenarios where working directly on ``master`` and by-passing the code review process is permitted.
 In most cases, documentation writing benefits from peer editing (code review) and *can* be done on a ticket branch.
 
+Development is not done directly on the ``master`` branch, but instead on *ticket branches*. These tickets are then merged into the ``develop`` branch after a unit testing and a code review.
+
+Merging to master is performed when decided by product owner, either based on a time window or a significant increase in functionality (e.g. one to several features have been included). The process of merging to master is managed by the quality assurance person, or when unavailable, the TSSW Manager. **THIS NEEDS BETTER DEFINITION AS ITS A SMPF**
+
+Upon merging to master, a version is tagged and released.
+
 The Git history of ``master`` **must never be re-written** with force pushes.
+
+.. _git-branch-develop:
+
+The develop branch
+------------------
+
+``develop`` is the main integration branch for our repositories. This is the branch used for cross-repository continuous integration activities.
+Development is not done directly on the ``develop`` branch, but instead on *ticket branches*. These tickets are then merged into the ``develop`` branch after undergoing unit testing and a subsequent code review.
+
+The Git history of ``develop`` **must never be re-written** with force pushes.  **IS THIS STILL TRUE??**
+
 
 .. _git-branch-user:
 
@@ -237,30 +252,20 @@ Ticket branches
 ---------------
 
 Ticket branches are associated with a JIRA ticket.
-Only ticket branches can be merged into ``master``.
+Only ticket branches can be merged into ``develop``.
 (In other words, developing on a ticket branch is the only way to record earned value for code development.)
 
-If the JIRA ticket is named ``DM-NNNN``, then the ticket branch will be named
+If the JIRA ticket is named ``TSS-NNNN``, then the ticket branch will be named
 
 .. code-block:: text
 
-   tickets/DM-NNNN
+   tickets/TSS-NNNN
 
-A ticket branch can be made by branching off an existing user branch.
-This is a great way to formalize and shape experimental work into an LSST software contribution.
+A ticket branch can be made by branching off the develop branch.
+.. This is a great way to formalize and shape experimental work into an LSST software contribution.
 
 When code on a ticket branch is ready for review and merging, follow the :ref:`code review process documentation <workflow-code-review>`.
 
-.. _git-branch-sims:
-
-Simulations branches
---------------------
-
-The LSST Simulations team uses a different branch naming scheme:
-
-.. code-block:: text
-
-   feature/SIM-NNN-{{feature-summary}}
 
 .. _review-preparation:
 
@@ -275,35 +280,43 @@ This section describes how to prepare your work for review.
 Pushing code
 ------------
 
-We recommend that you organize commits, improve commit messages, and ensure that your work is made against the latest commits on ``master`` with an `interactive rebase <https://help.github.com/articles/about-git-rebase/>`_.
+We recommend that you organize commits, improve commit messages, and ensure that your work is made against the latest commits on ``develop`` with an `interactive rebase <https://help.github.com/articles/about-git-rebase/>`_. Your code must also have gone through :ref:`an appropriate level of testing <workflow-testing>`.
+
 A common pattern is:
 
 .. code-block:: bash
 
-   git checkout master
+   CHECK THIS!!!
+   git checkout develop
    git pull
-   git checkout tickets/DM-NNNN
-   git rebase -i master
+   git checkout tickets/TSS-NNNN
+   git rebase -i develop
    # interactive rebase
    git push --force
 
 .. _workflow-testing:
 
-Testing with Jenkins
---------------------
+Testing at the Branch Level
+----------------------------
 
-Start a :doc:`stack-os-matrix Jenkins job </stack/jenkins-stack-os-matrix>` to run the Stack's tests with your ticket branch work.
+All software branches must go through an appropriate level of testing prior to making the pull request to merge to develop. At a minimum, user tests must be run manually by the developer, however, whenever possible, the Jenkins CI framework should be utilized. Part of the development process is the creation of tests to verify functionality of the branch. Examination of these tests is part of the review process.
 
-To learn more about DM's Jenkins continuous integration service, see :doc:`/jenkins/getting-started`.
-Then follow the steps listed in :doc:`/stack/jenkins-stack-os-matrix` to run the tests.
+**DESCRIBE HOW TO USE JENKINS TO DO THIS HERE**
 
-Ensure that you **do not** skip the demo before submitting a pull request.
-Otherwise, your testing may be incomplete.
+**STANDARD PROCEDURE SHOULD BE FOR THE DEVELOPER TO RUN THE TESTS AND POINT THE REVIEWER TO THE RESULTS RATHER THAN HAVE THE REVIEWER BUILD THEM**
+
+.. Start a :doc:`stack-os-matrix Jenkins job </stack/jenkins-stack-os-matrix>` to run the Stack's tests with your ticket branch work.
+
+.. To learn more about DM's Jenkins continuous integration service, see :doc:`/jenkins/getting-started`.
+.. Then follow the steps listed in :doc:`/stack/jenkins-stack-os-matrix` to run the tests.
+
+.. Ensure that you **do not** skip the demo before submitting a pull request.
+.. Otherwise, your testing may be incomplete.
 
 .. _workflow-pr:
 
 Make a pull request
--------------------
+------------------------------
 
 On GitHub, `create a pull request <https://help.github.com/articles/creating-a-pull-request/>`_ for your ticket branch.
 
@@ -311,7 +324,7 @@ The pull request's name should be formatted as
 
 .. code-block:: text
 
-   DM-NNNN: {{JIRA Ticket Title}}
+   TSS-NNNN: {{JIRA Ticket Title}}
 
 This helps you and other developers find the right pull request when browsing repositories on GitHub.
 
@@ -320,18 +333,18 @@ Background information should already be in the JIRA ticket description, commit 
 
 .. _workflow-code-review:
 
-DM Code Review and Merging Process
-==================================
+TSSW Code Review and Merging Process
+====================================
 
 .. _workflow-review-purpose:
 
-The scope and purpose of code review
-------------------------------------
+The Scope and Purpose of Code Reviews
+-------------------------------------
 
 We review work before it is merged to ensure that code is maintainable and usable by someone other than the author.
 
-- Is the code well commented, structured for clarity, and consistent with DM's code style?
-- Is there adequate unit test coverage for the code?
+- Is the code well commented, structured for clarity, and consistent with TSSW's code style?
+- Is there adequate unit testing coverage for the code?
 - Is the documentation augmented or updated to be consistent with the code changes?
 - Are the Git commits well organized and well annotated to help future developers understand the code development?
 
@@ -339,24 +352,30 @@ We review work before it is merged to ensure that code is maintainable and usabl
 
 Code reviews should also address whether the code fulfills design and performance requirements.
 
-Ideally the code review *should not be a design review.*
+Ideally, the code review *should not be a design review.*
 Before serious coding effort is committed to a ticket, the developer should either undertake an informal design review while creating the JIRA story, or more formally use the :abbr:`RFC (Request for Comment)` and :abbr:`RFD (Request for Discussion)` processes (see :doc:`/processes/decision_process`) for key design decisions.
 
 .. TODO: link to RFC/RFC process doc
 
 .. _workflow-review-assign:
 
-Assign a reviewer
------------------
+Assigning a Reviewer or Reviewers
+---------------------------------
 
 On your ticket's JIRA page, use the **Workflow** button to switch the ticket's state to **In Review**.
 JIRA will ask you to assign reviewers.
+
+Depending on the situation, multiple reviewers may be required:
+
+``Tasks`` - Require review by the associated product owner *and* another developer. However, should the product owner wish and be able to provide an adequate code review then only the product owner is required to perform the review.
+
+``Bugs`` - Require review only by another developer unless functionality or behaviour requires modification.
 
 In your JIRA message requesting review, indicate how involved the review work will be ("quick" or "not quick").
 The reviewer should promptly acknowledge the request, indicate whether they can do the review, and give a timeline for when they will be able to accomplish the request.
 This allows the developer to seek an alternate reviewer if necessary.
 
-Any team member in Data Management can review code; it is perfectly fine to draw reviewers from any segment of DM.
+Any team member in TSSW can review code.
 For major changes, it is good to choose someone more experienced than yourself.
 For minor changes, it may be good to choose someone less experienced than yourself.
 For large changes, more than one reviewer may be assigned, possibly split by area of the code.
@@ -370,24 +389,25 @@ Code reviews performed by peers are useful for a number of reasons:
 - Peers are a good proxy for maintainability.
 - It's useful for everyone to be familiar with other parts of the system.
 - Good practices can be spread; bad practices can be deprecated.
+- Performing a review is a fantastic way to learn new coding techiques/tips.
 
-All developers are expected to make time to perform reviews.
-The System Architect can intervene, however, if a developer is overburdened with review responsibility.
+All developers are expected to make time to perform reviews as this is part of the overhead.
+The TSSW Manager can intervene, however, if a developer is overburdened with review responsibility.
 
 .. _workflow-code-review-process:
 
-Code review discussion
+Code Review Discussion
 ----------------------
 
-Using GitHub pull requests
+Using GitHub Pull Requests
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Code review discussion should happen on the GitHub pull request, with the reviewer giving a discussion summary and conclusive thumbs-up on the JIRA ticket.
+Code review discussion should happen on the GitHub pull request (PR), with the reviewer giving a discussion summary and conclusive thumbs-up on the JIRA ticket.
 
-When conducting an extensive code review in a PR, reviewers should use GitHub's `"Start a review" feature <github-review>`_.
+When conducting an extensive code review in a pull request, reviewers should use GitHub's `"Start a review" feature <github-review>`_.
 This mode lets the reviewer queue multiple comments that are only sent once the review is submitted.
 Note that GitHub allows a reviewer to classify a code review: "Comment," "Approve," or "Request changes."
-While useful, this feature doesn't replace JIRA for formally :ref:`marking a ticket as being reviewed <workflow-resolving-review>`.
+While useful, this feature doesn't replace JIRA for formally :ref:`marking a ticket as being reviewed <workflow-resolving-review>` and a manual changing of the ticket status is required by the review.
 
 .. _github-review: https://help.github.com/articles/reviewing-proposed-changes-in-a-pull-request/
 
@@ -415,9 +435,9 @@ Resolving a review
 
 Code reviews are a collaborative check-and-improve process.
 Reviewers do not hold absolute authority, nor can developers ignore the reviewer's suggestions.
-The aim is to discuss, iterate, and improve the pull request until the work is ready to be deployed on ``master``.
+The aim is to discuss, iterate, and improve the pull request until the work is ready to be deployed on ``develop``.
 
-If the review becomes stuck on a design decision, that aspect of the review can be elevated into an RFC to seek team-wide consensus.
+If the review becomes stuck on a design decision, that aspect of the review can be elevated into an RFC to seek team-wide consensus. **WE DON'T HAVE A MECHANISM FOR THIS**
 
 If an issue is outside the ticket's scope, the reviewer should file a new ticket.
 
@@ -433,31 +453,75 @@ Resolving with multiple reviewers
 If there are multiple reviewers, our convention is that each review removes their name from the Reviewers list to indicate sign-off; the final reviewer switches the status to **Reviewed.**
 This indicates the ticket is ready to be merged.
 
-.. _workflow-code-review-merge:
+.. _workflow-code-review-merge-develop:
 
-Merging
--------
+Merging to Develop
+------------------
 
-Putting a ticket in a **Reviewed** state gives the developer the go-ahead to merge the ticket branch.
-If it has not been done already, the developer should rebase the ticket branch against the latest master.
+Putting a ticket in a **Reviewed** state gives the developer the go-ahead to merge the ticket branch to ``develop``.
+If it has not been done already, the developer should rebase the ticket branch against the latest master and rerun the CI-tests on Jenkins.
 During this rebase, we recommend squashing any fixup commits into the main commit implementing that feature.
 Git commit history should not record the iterative improvements from code review.
-If a rebase was required, a final check with Jenkins should be done.
 
 We **always use non-fast forward merges** so that the merge point is marked in Git history, with the merge commit containing the ticket number:
 
 .. code-block:: bash
 
-   git checkout master
+   git checkout develop
    git pull  # Sanity check; rebase ticket if master was updated.
-   git merge --no-ff tickets/DM-NNNN
+   git merge --no-ff tickets/TSS-NNNN
    git push
 
-**GitHub pull request pages also offer a 'big green button' for merging a branch to master**.
-We discourage you from using this button since there isn't a convenient way of knowing that the merged development history graph will be linear from GitHub's interface.
-Rebasing the ticket branch against ``master`` and doing the non-fast forward merging on the command line is the safest workflow.
+**GitHub pull request pages also offer a 'big green button' for merging a branch to master.** We discourage you from using this button since there isn't a convenient way of knowing that the merged development history graph will be linear from GitHub's interface.
+
+Rebasing the ticket branch against ``develop`` and doing the non-fast forward merging on the command line is the safest workflow.
 
 The ticket branch may be deleted from the GitHub remote if its name is in the merge commit comment (which it is by default).
+
+.. _workflow-CI-testing-develop:
+
+Continuous Integration Testing on Develop
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The develop branch is where the full set of continuous integration tests occur and the inter-dependencies of the full code base is evaluated. This set of CI-tests is managed by the TSSW Quality Assurance (QA) assignee and supported by the developers of the repo. 
+
+.. _workflow-fixing-breakage-develop:
+
+Fixing a Breakage on Develop
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In rare cases, despite the pre-merge integration testing process described :ref:`above <workflow-testing>`, a merge to develop might accidentally contain an error and "break the build".
+If this occurs, the merge may be reverted by anyone who notices the breakage and verifies that the merge is the cause -- unless a fix can be created, tested, reviewed, and merged very promptly. The parties involved in the fix at this level are the developer and QA person. The product owner is not required to be involved unless a change in functionality or behaviour of the code is modified.
+
+.. _workflow-announce:
+
+Announce the Change
+-------------------
+
+Once the merge has been completed, the developer should mark the JIRA ticket as **Done**.
+If this ticket adds a significant feature or fixes a significant bug, it should be announced in the `TBR`.
+In addition, if this update affects users, a short description of its effects from the user point of view should be prepared for the release notes that accompany each major release.
+(Release notes are currently collected via team-specific procedures.)
+
+.. _workflow-code-review-merge-master:
+
+Merging to Master
+------------------
+
+Upon reaching a milestone where significant changes have been incorporated to perform a new release of the code (which shall be dictated by the product owner and/or TSSW Manager), a ticket is created to perform a release and issued to the QA person. The release branch is cut from develop to undergo a series of testing by the QA group prior to release. Any bug fixes are done to this release only and are not to be performed on the develop branch with a subsequent re-branching for release.
+
+Once the release candidate has passed all tests, the release must undergo a subsequent review by the product owner via a pull request. **AND A SENIOR DEVELOPER?**
+
+Upon successful review, the ticket is marked as **Reviewed** giving the QA person the go-ahead to merge the release branch to both develop and master and create a tag of the master.
+
+The ticket is then marked as **Done** by the QA person.
+
+
+**NO REBASE HAPPENS HERE, CORRECT?**
+
+Git commit history should not record the iterative improvements from code review.
+
+Upon creation of the new tag, it should be announced via the same mechanism described :ref:`above <workflow-announce>`.
 
 .. _workflow-fixing-breakage-master:
 
@@ -467,15 +531,7 @@ Fixing a breakage on master
 In rare cases, despite the pre-merge integration testing process described :ref:`above <workflow-testing>`, a merge to master might accidentally contain an error and "break the build".
 If this occurs, the merge may be reverted by anyone who notices the breakage and verifies that the merge is the cause -- unless a fix can be created, tested, reviewed, and merged very promptly.
 
-.. _workflow-announce:
-
-Announce the change
--------------------
-
-Once the merge has been completed, the developer should mark the JIRA ticket as **Done**.
-If this ticket adds a significant feature or fixes a significant bug, it should be announced in the `DM Notifications category <https://community.lsst.org/c/dm/dm-notifications>`_ of community.lsst.org with tag `dm-dev <https://community.lsst.org/tags/dm-dev>`_.
-In addition, if this update affects users, a short description of its effects from the user point of view should be prepared for the release notes that accompany each major release.
-(Release notes are currently collected via team-specific procedures.)
+**SHOULD DISCUSS THIS**
 
 .. _git-commit-organization-best-practices:
 
@@ -487,7 +543,7 @@ Appendix: Commit Organization Best Practices
 Commits should represent discrete logical changes to the code
 -------------------------------------------------------------
 
-`OpenStack has an excellent discussion of commit best practices <https://wiki.openstack.org/wiki/GitCommitMessages#Structural_split_of_changes>`_; this is recommended reading for all DM developers.
+`OpenStack has an excellent discussion of commit best practices <https://wiki.openstack.org/wiki/GitCommitMessages#Structural_split_of_changes>`_; this is recommended reading for all TSSW developers.
 This section summarizes those recommendations.
 
 Commits on a ticket branch should be organized into discrete, self-contained units of change.
