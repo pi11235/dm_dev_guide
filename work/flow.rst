@@ -4,9 +4,9 @@ DM Development Workflow with Git, GitHub, JIRA and Jenkins
 
 This page describes our procedures for collaborating on LSST DM software and documentation with `Git <http://git-scm.org>`_, `GitHub <https://github.com>`_ and JIRA_:
 
-1. :ref:`Configuring Git for DM development <git-setup>`.
+1. :ref:`Configuring Git for TSSW development <git-setup>`.
 2. :ref:`Using JIRA for agile development <workflow-jira>`.
-3. :ref:`DM GitHub organizations <github-orgs>`.
+3. :ref:`TSSW GitHub organizations <github-orgs>`.
 4. :ref:`Policies for naming and using Git branches <git-branching>`.
 5. :ref:`Preparing code for review <review-preparation>`.
 6. :ref:`Reviewing and merging code <workflow-code-review>`.
@@ -27,15 +27,19 @@ Other related pages:
 Git & GitHub Setup
 ==================
 
-You need to install Git version 1.8.2, or later, and the :ref:`Git LFS client <git-lfs-install>` to work with our data repositories.
+You need to install Git version 1.8.2, or later to work with our repositories.
 
-Follow these steps to configure your Git environment for DM work:
+.. and the :ref:`Git LFS client <git-lfs-install>` to work with our data repositories.
 
-1. :ref:`Install Git LFS <git-lfs-install>` with authenticated access.
-2. :ref:`Set Git and GitHub to use your institution-hosted email address <git-setup-institutional-email>`.
-3. :ref:`Set Git to use 'plain' pushes <git-setup-plain-pushes>`.
+.. IS THIS TRUE FOR TSSW ?
 
-*See also:* :doc:`/git/setup`.
+.. 
+  Follow these steps to configure your Git environment for TSSW work:
+  1. :ref:`Install Git LFS <git-lfs-install>` with authenticated access.
+  2. :ref:`Set Git and GitHub to use your institution-hosted email address <git-setup-institutional-email>`.
+  3. :ref:`Set Git to use 'plain' pushes <git-setup-plain-pushes>`.
+
+     *See also:* :doc:`/git/setup`.
 
 .. _workflow-jira:
 
@@ -43,9 +47,9 @@ Agile development with JIRA
 ===========================
 
 We use JIRA_ to plan, coordinate and report our work.
-Your Technical/Control Account Manager (T/CAM) is the best resource for help with JIRA within your local group.
-T/CAMs can consult `DMTN-020 <https://dmtn-020.lsst.io/>`_.
-This section provides a high-level orientation for everyday DM development work.
+Your Manager is the best resource for help with JIRA within your local group.
+The prioritization of tasks for a given subsystem (e.g. M1M3) is to be decided by the product owner for that system, whereas the balance of tasks between subsystems for a given developer is decided by the TSSW Manager.
+This section provides a high-level orientation for everyday TSSW development work.
 
 *See also:* :doc:`jira-tips`.
 
@@ -58,18 +62,21 @@ Issue
    Issues are the fundamental units of work/planning information in JIRA.
 Story Points
    Story points are how we estimate and account for time and effort.
-   One story point is an idealized half day of uninterrupted work by a competent developer.
+   One story point is an idealized full day of uninterrupted work by a competent developer.
 Velocity
-   No developer works a two story point day.
+   No developer works a 5 story point week.
    Communication overhead, review work, and other activities will invariably eat into your day.
-   *Velocity* is the fraction of a story point that you can reasonably achieve in a half day.
-   A common velocity in DM is 0.7, so that you nominally accomplish 1.4 story points in a day.
-   We do not track velocities for individual developers; each DM group shares a common velocity.
-   Ask your T/CAM.
+   *Velocity* is the fraction of a story point that you can reasonably achieve in a day.
+   We aim for a velocity in TSSW of 0.8, so that you nominally accomplish 0.8 story points in a day.
+Sprint
+   The sprint is a 2-week period where issues are worked on and tasks are accomplished.
+   Prior to the beginning of each sprint, each developer is to work with the TSSW Manager
+   and associated product owners to determine which tasks will be worked on during the sprint.
+   Each developer is to load 8 story points in their sprint.
 Epic
-   Epics are a special type of issue, created by T/CAMs, that guide your work over a six month **cycle** in pursuit of DM's development roadmap (`LDM-240 <http://ls.st/ldm-240>`_).
+   Epics are a special type of issue, created by the TSSW Manager, that guide your work over longer term cycles
    At the start of each cycle, your T/CAM will create an epic (or several) and allocate *story points* to that epic.
-   You don't work directly on an epic; rather you work on *stories* (below) that cumulatively accomplish the epic.
+   You don't work directly on an epic; rather you work on *tasks* (below) that cumulatively accomplish the epic.
 
 .. _workflow-jira-issues:
 
@@ -78,21 +85,24 @@ Tickets
 
 All development work is done on these three types of **JIRA issues** that are generically referred to as **tickets**:
 
-Story
-   Stories are for work that accomplish your main goals for a cycle.
-   Stories are part of regular epics, planned at the start of each cycle.
+Task
+   Tasks are for work that accomplish your main goals for a given sprint.
+   Tasks are part of regular epics and stored in the Backlog. These tasks are then
+   pulled into the sprint before the start of each cycle.
 Bug
-   A ticket of type bug describes “emergent” work: it was not planned at the start of a development cycle, but rather is a response to an unexpected problem report.
-   Bugs are associated with special epics designated for addressing emergent work.
-Improvement
+   A ticket of type bug describes “emergent” work: it was not planned at the start of a development cycle,
+   but rather is a response to an unexpected problem report.
+
+..   Bugs are associated with special epics designated for addressing emergent work.
+.. Improvement
    An improvement is essentially a feature request.
    Like a *bug*, an improvement is emergent, and hence belongs in a special epic.
    Unlike a bug, an improvement adds new functionality.
 
-Issue semantics were discussed in `RFC-43 <https://jira.lsstcorp.org/browse/RFC-43>`_.
 
 As a developer, you can create tickets to work on.
 You can also create bug or improvement tickets and assign them to others (ideally with some consultation).
+All code that is to be developed and merged into the develop and master branches *require* a ticket.
 
 .. _workflow-jira-ticket-creation:
 
@@ -106,47 +116,44 @@ JIRA allows a myriad of metadata to be specified when creating a ticket.
 At a minimum, you should specify:
 
 Project
-   For normal work, this should be set to **Data Management**.
+   For normal work, this should be set to **Telescope and Site Software**.
    It may occasionally be appropriate to use another project; for example,
-   when requesting work from another LSST subsystem or when filing an :doc:`RFC </communications/rfc>`.
+   when requesting work from another LSST subsystem.
 Issue Type
-   If the work is associated with an epic, the issue type is a 'Story.'
-   For emergent work, 'Bug' or 'Improvement' can be used (see above for semantics).
+   If the work is associated with an epic, the issue type is a 'Task.'
+   For emergent work, 'Bug' or 'Task' can be used (see above for semantics).
 Summary
    This is the ticket's title and should be written to help colleagues browsing JIRA dashboards.
 Description
    The description should provide a clear description of the deliverable that can serve as a definition of 'Done.'
    This will prevent scope creep in your implementation and the code review.
-   For stories, you can outline your implementation design in this field.
+   For tasks, you can outline your implementation design in this field.
    For bug reports, include any information needed to diagnose and reproduce the issue.
    Feel free to use `Atlassian markup syntax <https://jira.lsstcorp.org/secure/WikiRendererHelpAction.jspa?section=texteffects>`_.
 
-In addition, you may be able to provide some or all of the following.
-While, in general, it's helpful to provide as much information as you can, don't worry about leaving some fields blank: the T/CAMs will ensure the work gets picked up and assigned to the right place, and empty metadata is better than bad medadata.
+In addition, you may be able to provide some or all of the following. While, in general, it's helpful to provide as much information as you can, don't worry about leaving some fields blank: the TSSW Manager (or scrum master) will ensure the
+work gets picked up and assigned to the right place, and empty metadata is better than bad medadata.
 
 Components
-   You should choose from the pre-populated list of components to specify what part of the DM system the ticket relates to.
-   If in doubt, ask your T/CAM.
+   You should choose from the pre-populated list of components to specify what part of the TSSW system the ticket relates to.
+   If in doubt, ask your TSSW Manager.
 Assignee
-   Typically you will assign yourself (or your T/CAM will assign you) to a ticket.
+   Typically you will assign yourself (or your Manager or product owner will assign you) to a ticket.
    You can also assign tickets to others.
    If you are uncertain about who the assignee should be you can allow the ticket to be automatically assigned.
 Story Points
    Use this field, at ticket creation time, to **estimate** the amount of effort involved to accomplish the work.
    Keep in mind how *velocity* (see above) converts story points into real-world days.
 Labels
+   *NOT SURE HOW WE USE LABELS IN TSSW*
    Think of labels as tags that you can use to sort your personal work.
    Unlike the Component and Epic fields, you are free to create and use labels in any way you see fit, but you should also refer to this list of :ref:`common labels <jira-labels>`.
 Linked Issues
    You can express relationships between JIRA issues with this field.
-   For example, work that implements an RFC should link to that RFC.
    You can also express dependencies to other work using a 'is Blocked by' relationship.
 Epic Link
-   If the ticket is a story, you must specify what epic it belongs to with this field.
-   By definition, bug or improvement-type tickets are not associated with an epic.
-Team
-   Specify which DM team is responsible for doing the work.
-   Refer to the list of :ref:`supported teams <jira-teams>`.
+   If the ticket is a task, you must specify what epic it belongs to with this field.
+   By definition, bug tickets are not associated with an epic.
 
 .. _workflow-jira-ticket-status:
 
@@ -165,61 +172,29 @@ Name the duplicate ticket in the status change comment field.
 
 .. _github-orgs:
 
-DM GitHub Organizations
-=======================
+TSSW GitHub Organizations
+=========================
 
-DM's Git repositories are available from three GitHub organizations: `lsst <https://github.com/lsst>`__, `lsst-dm <https://github.com/lsst-dm>`__, and `lsst-sqre <https://github.com/lsst-sqre>`__.
-LSST DM source code is publicly available and open source.
+TBR
 
-You should already be a member of the `lsst <https://github.com/lsst>`__ and `lsst-dm <https://github.com/lsst-dm>`__ GitHub organizations.
-If you cannot create repositories or push to repositories there, ask your T/CAM to :ref:`add you to these organizations <getting-started-github>`.
-
-lsst GitHub organization
-------------------------
-
-The `lsst <https://github.com/lsst>`__ GitHub organization is for public-facing code and documentation repositories.
-Specifically, packages in main EUPS distributions are available from the `lsst <https://github.com/lsst>`__ organization, along with official documents (including LDM design documentation).
-
-lsst-dm GitHub organization
----------------------------
-
-The `lsst-dm <https://github.com/lsst-dm>`__ GitHub organization is for miscellaneous Data Management projects:
-
-- EUPS packages that are not yet part of the official distribution. Projects can be incubated in `lsst-dm <https://github.com/lsst-dm>`__ and later migrated to the `lsst <https://github.com/lsst>`__ organization.
-- Retired projects and EUPS packages (these have names prefixed with "legacy").
-- Prototypes, internal experiments, and other types of ad-hoc projects.
-- Internal documentation, including DMTN technotes and this DM Developer Guide.
-
-lsst-sqre GitHub organization
------------------------------
-
-The `lsst-sqre <https://github.com/lsst-sqre>`__ GitHub organization is used by the SQuaRE team for operational services and internal experiments.
-SQuaRE's technical notes (SQR) are also available in `lsst-sqre <https://github.com/lsst-sqre>`__.
-
-Upstream repositories and organizations
----------------------------------------
-
-Whenever possible, DM developers should contribute to the third-party open source codebases used by the LSST Stack.
-Since this type of development is typically done with a fork-and-PR workflow, the third-party repo should be forked into an LSST organization, usually `lsst-dm <https://github.com/lsst>`__ or `lsst-sqre <https://github.com/lsst-sqre>`__.
-Doing upstream development in an LSST GitHub organization lets the team more easily identify what work is being done.
 
 Personal GitHub repositories
 ----------------------------
 
 Use personal repositories for side projects done after hours or on "science time."
-Work by DM staff that is delivered to LSST in ticketed work **can't** be developed in personal GitHub repositories outside of the `lsst <https://github.com/lsst>`__, `lsst-dm <https://github.com/lsst-dm>`__, and `lsst-sqre <https://github.com/lsst-sqre>`__ GitHub organizations, though.
+Work by TSSW staff that is delivered to LSST in ticketed work **can not** be developed in personal GitHub repositories.
 
-Community contributors can of course use personal repositories (and forks of LSST repositories) to make contributions to LSST.
+.. Community contributors can of course use personal repositories (and forks of LSST repositories) to make contributions to LSST.
 
 .. _git-branching:
 
-DM Git Branching Policy
-=======================
+TSSW Git Branching Policy
+=========================
 
-Rather than forking LSST's GitHub repositories, DM developers use a *shared repository model* by cloning repositories in the `lsst <https://github.com/lsst>`_, `lsst-dm <https://github.com/lsst>`_, and `lsst-sqre <https://github.com/lsst-sqre>`_ GitHub organizations.
-Since the GitHub ``origin`` remotes are shared, it is essential that DM developers adhere to the following naming conventions for branches.
 
-See `RFC-21 <https://jira.lsstcorp.org/browse/RFC-21>`_ for discussion.
+It is essential that TSSW developers adhere to the following naming conventions for branches.
+
+See `RFC-21 <https://jira.lsstcorp.org/browse/RFC-21>`_ for discussion. *IS THIS APPLICABLE?*
 
 .. _git-branch-integration:
 
