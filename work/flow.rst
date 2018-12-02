@@ -49,6 +49,7 @@ Agile development with JIRA
 We use JIRA_ to plan, coordinate and report our work.
 Your Manager is the best resource for help with JIRA within your local group.
 The prioritization of tasks for a given subsystem (e.g. M1M3) is to be decided by the product owner for that system, whereas the balance of tasks between subsystems for a given developer is decided by the TSSW Manager.
+
 This section provides a high-level orientation for everyday TSSW development work.
 
 *See also:* :doc:`jira-tips`.
@@ -75,7 +76,7 @@ Sprint
    Each developer is to load 8 story points in their sprint.
 Epic
    Epics are a special type of issue, created by the TSSW Manager, that guide your work over longer term cycles
-   At the start of each cycle, your T/CAM will create an epic (or several) and allocate *story points* to that epic.
+   Before the start of each cycle, your CAM will create an epic (or several) and allocate *story points* to that epic.
    You don't work directly on an epic; rather you work on *tasks* (below) that cumulatively accomplish the epic.
 
 .. _workflow-jira-issues:
@@ -83,7 +84,7 @@ Epic
 Tickets
 -------
 
-All development work is done on these three types of **JIRA issues** that are generically referred to as **tickets**:
+All development work is done on these two types of **JIRA issues** that are generically referred to as **tickets**:
 
 Task
    Tasks are for work that accomplish your main goals for a given sprint.
@@ -145,7 +146,7 @@ Story Points
    Use this field, at ticket creation time, to **estimate** the amount of effort involved to accomplish the work.
    Keep in mind how *velocity* (see above) converts story points into real-world days.
 Labels
-   *NOT SURE HOW WE USE LABELS IN TSSW*
+   *NOT SURE HOW WE USE LABELS IN TSSW??*
    Think of labels as tags that you can use to sort your personal work.
    Unlike the Component and Epic fields, you are free to create and use labels in any way you see fit, but you should also refer to this list of :ref:`common labels <jira-labels>`.
 Linked Issues
@@ -350,9 +351,8 @@ We review work before it is merged to ensure that code is maintainable and usabl
 
 .. well- hyphenation? no http://english.stackexchange.com/a/65632
 
-Code reviews should also address whether the code fulfills design and performance requirements.
+Code reviews should also address whether the code fulfills design and performance requirements. However, the code review *should not be a design review.*
 
-Ideally, the code review *should not be a design review.*
 Before serious coding effort is committed to a ticket, the developer should either undertake an informal design review while creating the JIRA story, or more formally use the :abbr:`RFC (Request for Comment)` and :abbr:`RFD (Request for Discussion)` processes (see :doc:`/processes/decision_process`) for key design decisions.
 
 .. TODO: link to RFC/RFC process doc
@@ -391,7 +391,7 @@ Code reviews performed by peers are useful for a number of reasons:
 - Good practices can be spread; bad practices can be deprecated.
 - Performing a review is a fantastic way to learn new coding techiques/tips.
 
-All developers are expected to make time to perform reviews as this is part of the overhead.
+All developers are expected to make time to perform reviews as this is part of their overhead.
 The TSSW Manager can intervene, however, if a developer is overburdened with review responsibility.
 
 .. _workflow-code-review-process:
@@ -459,7 +459,7 @@ Merging to Develop
 ------------------
 
 Putting a ticket in a **Reviewed** state gives the developer the go-ahead to merge the ticket branch to ``develop``.
-If it has not been done already, the developer should rebase the ticket branch against the latest master and rerun the CI-tests on Jenkins.
+If it has not been done already (although it should be), the developer should rebase the ticket branch against the latest master and rerun the CI-tests on Jenkins.
 During this rebase, we recommend squashing any fixup commits into the main commit implementing that feature.
 Git commit history should not record the iterative improvements from code review.
 
@@ -472,7 +472,7 @@ We **always use non-fast forward merges** so that the merge point is marked in G
    git merge --no-ff tickets/TSS-NNNN
    git push
 
-**GitHub pull request pages also offer a 'big green button' for merging a branch to master.** We discourage you from using this button since there isn't a convenient way of knowing that the merged development history graph will be linear from GitHub's interface.
+**GitHub pull request pages also offer a 'big green button' for merging a branch to master.** (DO NOT THINK THIS IS TRUE FOR DEVELOP!) We discourage you from using this button since there isn't a convenient way of knowing that the merged development history graph will be linear from GitHub's interface.
 
 Rebasing the ticket branch against ``develop`` and doing the non-fast forward merging on the command line is the safest workflow.
 
@@ -508,13 +508,13 @@ In addition, if this update affects users, a short description of its effects fr
 Merging to Master
 ------------------
 
-Upon reaching a milestone where significant changes have been incorporated to perform a new release of the code (which shall be dictated by the product owner and/or TSSW Manager), a ticket is created to perform a release and issued to the QA person. The release branch is cut from develop to undergo a series of testing by the QA group prior to release. Any bug fixes are done to this release only and are not to be performed on the develop branch with a subsequent re-branching for release.
+Upon reaching a milestone where significant changes have been incorporated to perform a new release of the code (which shall be dictated by the product owner and/or TSSW Manager), a ticket is created to perform a release and issued to the most appropriate developer (ideally the person that implemented to most relevant changes for the version). The release branch is cut from develop to undergo a series of testing by the QA group and developer(s) prior to release. Any bug fixes are done to this release only and are not to be performed on the develop branch with a subsequent re-branching for release.
 
 Once the release candidate has passed all tests, the release must undergo a subsequent review by the product owner via a pull request. **AND A SENIOR DEVELOPER?**
 
-Upon successful review, the ticket is marked as **Reviewed** giving the QA person the go-ahead to merge the release branch to both develop and master and create a tag of the master.
+Upon successful review, the ticket is marked as **Reviewed** giving the developer the go-ahead to merge the release branch to both develop and master and create a tag of the master.
 
-The ticket is then marked as **Done** by the QA person.
+The ticket is then marked as **Done** by the developer.
 
 
 **NO REBASE HAPPENS HERE, CORRECT?**
